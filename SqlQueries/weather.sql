@@ -26,3 +26,18 @@ SELECT ROUND(
        ) AS Median_Latitude
 FROM RankedData
 LIMIT 1;
+
+SELECT ROUND(AVG(LAT_N), 4) AS median
+FROM (
+    SELECT 
+        LAT_N,
+        @row := @row + 1 AS row_num,
+        (SELECT COUNT(*) FROM STATION) AS total_rows
+    FROM 
+        STATION,
+        (SELECT @row := 0) AS r
+    ORDER BY 
+        LAT_N
+) AS ordered_data
+WHERE 
+    row_num IN (FLOOR((total_rows + 1)/2), FLOOR((total_rows + 2)/2));
